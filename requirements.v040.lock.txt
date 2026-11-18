@@ -1,0 +1,510 @@
+-e ./packages/common
+    # via memmachine-server
+-e ./packages/server
+aiofile==3.12.3
+    # via py-key-value-aio
+aiohappyeyeballs==2.7.1
+    # via aiohttp
+aiohttp==3.14.3
+    # via instructor
+aiosignal==1.4.0
+    # via aiohttp
+aiosqlite==0.22.1
+    # via memmachine-server
+alembic==1.20.0
+    # via memmachine-server
+annotated-doc==0.0.5
+    # via
+    #   fastapi
+    #   typer
+annotated-types==0.8.0
+    # via pydantic
+anyio==4.15.1
+    # via
+    #   httpx
+    #   httpx2
+    #   langsmith
+    #   mcp
+    #   openai
+    #   py-key-value-aio
+    #   sse-starlette
+    #   starlette
+    #   watchfiles
+asyncpg==0.31.0
+    # via memmachine-server
+attrs==26.1.0
+    # via
+    #   aiohttp
+    #   cyclopts
+    #   jsonschema
+    #   jsonschema-path
+    #   referencing
+authlib==1.8.0
+    # via fastmcp-slim
+babel==2.18.0
+    # via memmachine-server
+beartype==0.22.9
+    # via py-key-value-aio
+boto3==1.43.95
+    # via
+    #   instructor
+    #   langchain-aws
+    #   memmachine-server
+botocore==1.43.95
+    # via
+    #   boto3
+    #   s3transfer
+cachetools==7.1.8
+    # via py-key-value-aio
+caio==0.12.4
+    # via aiofile
+certifi==2026.7.22
+    # via
+    #   httpcore
+    #   httpx
+    #   requests
+cffi==2.1.1 ; platform_python_implementation != 'PyPy'
+    # via cryptography
+charset-normalizer==3.5.1
+    # via requests
+click==8.5.0
+    # via
+    #   huggingface-hub
+    #   instructor
+    #   nltk
+    #   uvicorn
+cloudpickle==3.1.2
+    # via joblib
+cohere==7.1.1
+    # via memmachine-server
+colorama==0.4.6 ; sys_platform == 'win32'
+    # via
+    #   tqdm
+    #   typer
+cryptography==50.0.1
+    # via
+    #   authlib
+    #   joserfc
+    #   pyjwt
+    #   secretstorage
+cyclopts==4.25.2
+    # via fastmcp-slim
+defusedxml==0.7.1
+    # via nltk
+distro==1.9.0
+    # via
+    #   langsmith
+    #   openai
+dnspython==2.8.0
+    # via email-validator
+docstring-parser==0.18.0
+    # via
+    #   cyclopts
+    #   instructor
+email-validator==2.3.0
+    # via pydantic
+exceptiongroup==1.3.1
+    # via fastmcp-slim
+fastapi==0.141.1
+    # via memmachine-server
+fastavro==1.12.2
+    # via cohere
+fastmcp==4.0.3
+    # via memmachine-server
+fastmcp-slim==4.0.3
+    # via fastmcp
+filelock==3.32.6
+    # via huggingface-hub
+frozenlist==1.8.0
+    # via
+    #   aiohttp
+    #   aiosignal
+fsspec==2026.7.0
+    # via huggingface-hub
+greenlet==3.5.6
+    # via sqlalchemy
+griffelib==2.3.0
+    # via fastmcp-slim
+grpcio==1.84.0
+    # via qdrant-client
+h11==0.16.0
+    # via
+    #   httpcore
+    #   httpcore2
+    #   uvicorn
+h2==4.4.1
+    # via httpx
+hf-xet==1.6.0 ; platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'
+    # via huggingface-hub
+hpack==4.2.0
+    # via h2
+httpcore==1.0.9
+    # via httpx
+httpcore2==2.13.0 ; sys_platform != 'emscripten'
+    # via httpx2
+httpx==0.28.1
+    # via
+    #   cohere
+    #   huggingface-hub
+    #   langchain-core
+    #   openai
+    #   qdrant-client
+httpx2==2.13.0
+    # via
+    #   fastmcp-slim
+    #   langsmith
+    #   mcp
+httpx2-jsfetch==1.0 ; sys_platform == 'emscripten'
+    # via httpx2
+huggingface-hub==1.31.0
+    # via tokenizers
+hyperframe==6.1.0
+    # via h2
+idna==3.19
+    # via
+    #   anyio
+    #   email-validator
+    #   httpx
+    #   httpx2
+    #   instructor
+    #   requests
+    #   yarl
+instructor==1.17.0
+    # via memmachine-server
+jaraco-classes==3.4.0
+    # via keyring
+jaraco-context==6.1.2
+    # via keyring
+jaraco-functools==4.6.0
+    # via keyring
+jeepney==0.9.0 ; sys_platform == 'linux'
+    # via
+    #   keyring
+    #   secretstorage
+jinja2==3.1.6
+    # via instructor
+jiter==0.14.0
+    # via
+    #   instructor
+    #   openai
+jmespath==1.1.0
+    # via
+    #   boto3
+    #   botocore
+joblib==1.6.0
+    # via nltk
+joserfc==1.7.5
+    # via
+    #   authlib
+    #   fastmcp-slim
+json-repair==0.63.4
+    # via memmachine-server
+jsonpatch==1.33
+    # via langchain-core
+jsonpointer==3.1.1
+    # via jsonpatch
+jsonref==1.1.0
+    # via fastmcp-slim
+jsonschema==4.26.0
+    # via mcp
+jsonschema-path==0.5.0
+    # via fastmcp-slim
+jsonschema-specifications==2025.9.1
+    # via jsonschema
+keyring==25.7.0
+    # via py-key-value-aio
+langchain-aws==1.7.6
+    # via memmachine-server
+langchain-core==1.6.3
+    # via
+    #   langchain-aws
+    #   langchain-text-splitters
+langchain-protocol==0.0.19
+    # via langchain-core
+langchain-text-splitters==1.1.2
+    # via memmachine-server
+langsmith==0.12.5
+    # via langchain-core
+mako==1.4.1
+    # via alembic
+markdown-it-py==4.2.0
+    # via rich
+markupsafe==3.0.3
+    # via
+    #   jinja2
+    #   mako
+mcp==2.2.0
+    # via fastmcp-slim
+mcp-types==2.2.0
+    # via
+    #   fastmcp-slim
+    #   mcp
+mdurl==0.1.2
+    # via markdown-it-py
+more-itertools==11.1.0
+    # via
+    #   jaraco-classes
+    #   jaraco-functools
+multidict==6.8.0
+    # via
+    #   aiohttp
+    #   yarl
+neo4j==6.3.1
+    # via memmachine-server
+nltk==3.10.3
+    # via memmachine-server
+numkong==7.8.2
+    # via usearch
+numpy==2.5.3
+    # via
+    #   langchain-aws
+    #   qdrant-client
+    #   rank-bm25
+    #   usearch
+openai==2.54.0
+    # via
+    #   instructor
+    #   memmachine-server
+openapi-pydantic==0.5.1
+    # via fastmcp-slim
+opentelemetry-api==1.44.0
+    # via
+    #   fastmcp-slim
+    #   mcp
+orjson==3.12.0 ; platform_python_implementation != 'PyPy'
+    # via langsmith
+packaging==26.3
+    # via
+    #   fastmcp-slim
+    #   huggingface-hub
+    #   langchain-core
+    #   langsmith
+pathable==0.6.0
+    # via jsonschema-path
+pgvector==0.5.0
+    # via memmachine-server
+platformdirs==4.11.8
+    # via fastmcp-slim
+portalocker==3.2.0
+    # via qdrant-client
+prometheus-client==0.26.0
+    # via memmachine-server
+propcache==0.5.3
+    # via
+    #   aiohttp
+    #   yarl
+protobuf==7.36.1
+    # via qdrant-client
+psutil==7.2.2
+    # via memmachine-server
+py-key-value-aio==0.4.5
+    # via fastmcp-slim
+pycparser==3.0 ; implementation_name != 'PyPy' and platform_python_implementation != 'PyPy'
+    # via cffi
+pydantic==2.13.5
+    # via
+    #   cohere
+    #   fastapi
+    #   fastmcp-slim
+    #   instructor
+    #   langchain-aws
+    #   langchain-core
+    #   langsmith
+    #   mcp
+    #   mcp-types
+    #   memmachine-common
+    #   memmachine-server
+    #   openai
+    #   openapi-pydantic
+    #   pydantic-settings
+    #   qdrant-client
+pydantic-core==2.46.5
+    # via
+    #   cohere
+    #   instructor
+    #   pydantic
+pydantic-settings==2.15.0
+    # via fastmcp-slim
+pygments==2.21.0
+    # via
+    #   rich
+    #   rich-rst
+pyjwt==2.14.0
+    # via mcp
+pyperclip==1.11.0
+    # via fastmcp-slim
+python-dateutil==2.9.0.post0
+    # via botocore
+python-dotenv==1.2.3
+    # via
+    #   fastmcp-slim
+    #   memmachine-server
+    #   pydantic-settings
+python-multipart==0.0.32
+    # via
+    #   fastmcp-slim
+    #   mcp
+pytz==2026.3.post1
+    # via neo4j
+pywin32==312 ; sys_platform == 'win32'
+    # via
+    #   mcp
+    #   portalocker
+pywin32-ctypes==0.2.3 ; sys_platform == 'win32'
+    # via keyring
+pyyaml==6.0.3
+    # via
+    #   fastmcp-slim
+    #   huggingface-hub
+    #   jsonschema-path
+    #   langchain-core
+    #   memmachine-server
+qdrant-client==1.19.0
+    # via memmachine-server
+rank-bm25==0.2.2
+    # via memmachine-server
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-path
+    #   jsonschema-specifications
+regex==2026.9.10
+    # via
+    #   instructor
+    #   memmachine-common
+    #   nltk
+requests==2.34.2
+    # via
+    #   cohere
+    #   instructor
+    #   langsmith
+    #   requests-toolbelt
+requests-toolbelt==1.0.0
+    # via langsmith
+rich==14.3.4
+    # via
+    #   cyclopts
+    #   fastmcp-slim
+    #   instructor
+    #   rich-rst
+    #   typer
+rich-rst==2.1.0
+    # via cyclopts
+rpds-py==2026.6.3
+    # via
+    #   jsonschema
+    #   referencing
+s3transfer==0.19.2
+    # via boto3
+secretstorage==3.5.0 ; sys_platform == 'linux'
+    # via keyring
+shellingham==1.5.4
+    # via typer
+six==1.17.0
+    # via python-dateutil
+sniffio==1.3.1
+    # via
+    #   langsmith
+    #   openai
+sqlalchemy==2.0.53
+    # via
+    #   alembic
+    #   memmachine-server
+sqlite-vec==0.1.9
+    # via memmachine-server
+sse-starlette==3.4.11
+    # via mcp
+starlette==1.6.0
+    # via
+    #   fastapi
+    #   fastmcp-slim
+    #   mcp
+    #   sse-starlette
+tenacity==9.1.4
+    # via
+    #   instructor
+    #   langchain-core
+tokenizers==0.23.2
+    # via cohere
+tqdm==4.70.1
+    # via
+    #   huggingface-hub
+    #   nltk
+    #   openai
+    #   usearch
+truststore==0.10.4 ; sys_platform != 'emscripten'
+    # via
+    #   httpcore2
+    #   httpx2
+typer==0.27.2
+    # via instructor
+types-requests==2.33.0.20260906
+    # via cohere
+typing-extensions==4.16.0
+    # via
+    #   aiohttp
+    #   aiosignal
+    #   alembic
+    #   anyio
+    #   cohere
+    #   exceptiongroup
+    #   fastapi
+    #   fastmcp-slim
+    #   grpcio
+    #   httpx2
+    #   huggingface-hub
+    #   langchain-core
+    #   langchain-protocol
+    #   langsmith
+    #   mcp
+    #   mcp-types
+    #   memmachine-common
+    #   openai
+    #   opentelemetry-api
+    #   py-key-value-aio
+    #   pydantic
+    #   pydantic-core
+    #   referencing
+    #   sqlalchemy
+    #   starlette
+    #   typing-inspection
+typing-inspection==0.4.4
+    # via
+    #   fastapi
+    #   mcp
+    #   pydantic
+    #   pydantic-settings
+tzdata==2026.4 ; sys_platform == 'win32'
+    # via memmachine-server
+uncalled-for==0.4.0
+    # via fastmcp-slim
+urllib3==2.8.0
+    # via
+    #   botocore
+    #   instructor
+    #   qdrant-client
+    #   requests
+    #   types-requests
+usearch==2.26.2
+    # via memmachine-server
+uuid-utils==0.17.1
+    # via
+    #   langchain-core
+    #   langsmith
+uvicorn==0.53.0
+    # via
+    #   fastmcp-slim
+    #   mcp
+    #   memmachine-server
+watchfiles==1.2.0
+    # via fastmcp-slim
+websockets==17.1
+    # via
+    #   fastmcp-slim
+    #   langsmith
+xxhash==4.0.1
+    # via langsmith
+yarl==1.25.1
+    # via aiohttp
+zstandard==0.25.0
+    # via langsmith

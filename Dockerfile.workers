@@ -1,0 +1,6 @@
+# Multi-worker runtime image: base image plus the semantic-ingestion file lock
+# that makes concurrent uvicorn workers safe (patched source in packages/).
+FROM memmachine/memmachine:v0.4.0-local
+
+COPY packages/server/src/memmachine_server/semantic_memory/semantic_memory.py \
+     /usr/local/lib/python3.12/site-packages/memmachine_server/semantic_memory/semantic_memory.py

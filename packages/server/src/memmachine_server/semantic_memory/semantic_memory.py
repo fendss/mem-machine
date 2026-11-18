@@ -10,6 +10,7 @@ information extraction and a vector database for semantic search capabilities.
 import asyncio
 import contextlib
 import logging
+import os
 from asyncio import Task
 from collections.abc import AsyncIterator, Callable, Mapping, MutableMapping, Sequence
 from datetime import datetime, timedelta
@@ -48,6 +49,11 @@ from .semantic_model import (
 from .storage.storage_base import SemanticStorage
 
 logger = logging.getLogger(__name__)
+
+_INGESTION_LOCK_PATH = os.environ.get(
+    "MEMMACHINE_SEMANTIC_INGESTION_LOCK",
+    "/tmp/memmachine-semantic-ingestion.lock",
+)
 
 
 def _consolidate_errors_and_raise(possible_errors: Sequence[Any], msg: str) -> None:
@@ -818,45 +824,98 @@ class SemanticService:
         backoff_sec = self._background_ingestion_interval_sec
 
         while not self._is_shutting_down:
-            dirty_sets = [
-                s
-                async for s in self._semantic_storage.get_history_set_ids(
-                    min_uningested_messages=self._feature_update_message_limit,
-                    older_than=(await self._semantic_storage.get_storage_time())
-                    - self._feature_time_limit,
-                )
-            ]
-
-            if len(dirty_sets) == 0:
-                # Reset backoff so prior error-induced backoff doesn't carry
-                # over across long idle periods.
-                backoff_sec = self._background_ingestion_interval_sec
+            # Every uvicorn worker runs this loop. Without a cross-process
+            # lock they would all pull the same uningested history rows and
+            # duplicate the extracted features, so exactly one worker may
+            # ingest per cycle.
+            lock_fd = self._try_acquire_ingestion_lock()
+            if lock_fd is None:
                 await self._interruptible_sleep(self._background_ingestion_interval_sec)
                 continue
 
-            had_errors = False
+            sleep_sec = self._background_ingestion_interval_sec
             try:
-                await ingestion_service.process_set_ids(dirty_sets)
-            except Exception:
-                if self._debug_fail_loudly:
-                    raise
-                had_errors = True
-                logger.exception(
-                    "background ingestion failed, backing off %.1fs", backoff_sec
-                )
+                dirty_sets = [
+                    s
+                    async for s in self._semantic_storage.get_history_set_ids(
+                        min_uningested_messages=self._feature_update_message_limit,
+                        older_than=(await self._semantic_storage.get_storage_time())
+                        - self._feature_time_limit,
+                    )
+                ]
 
-            # Always attempt purge — purge_ingested_rows only deletes rows
-            # for fully-ingested sets, so partially-failed sets are skipped
-            # and their duplicate guard is preserved.
-            purged = await self._semantic_storage.purge_ingested_rows(dirty_sets)
-            if purged:
-                logger.info(
-                    "purged %d ingested rows for %d sets", purged, len(dirty_sets)
-                )
+                if len(dirty_sets) == 0:
+                    # Reset backoff so prior error-induced backoff doesn't carry
+                    # over across long idle periods.
+                    backoff_sec = self._background_ingestion_interval_sec
+                else:
+                    had_errors = False
+                    try:
+                        await ingestion_service.process_set_ids(dirty_sets)
+                    except Exception:
+                        if self._debug_fail_loudly:
+                            raise
+                        had_errors = True
+                        logger.exception(
+                            "background ingestion failed, backing off %.1fs",
+                            backoff_sec,
+                        )
 
-            if had_errors:
-                await self._interruptible_sleep(backoff_sec)
-                backoff_sec = min(backoff_sec * 2, 60.0)
-            else:
-                backoff_sec = self._background_ingestion_interval_sec
-                await self._interruptible_sleep(self._background_ingestion_interval_sec)
+                    # Always attempt purge — purge_ingested_rows only deletes rows
+                    # for fully-ingested sets, so partially-failed sets are skipped
+                    # and their duplicate guard is preserved.
+                    purged = await self._semantic_storage.purge_ingested_rows(
+                        dirty_sets
+                    )
+                    if purged:
+                        logger.info(
+                            "purged %d ingested rows for %d sets",
+                            purged,
+                            len(dirty_sets),
+                        )
+
+                    if had_errors:
+                        sleep_sec = backoff_sec
+                        backoff_sec = min(backoff_sec * 2, 60.0)
+                    else:
+                        backoff_sec = self._background_ingestion_interval_sec
+            finally:
+                self._release_ingestion_lock(lock_fd)
+
+            await self._interruptible_sleep(sleep_sec)
+
+    @staticmethod
+    def _try_acquire_ingestion_lock() -> int | None:
+        """Try to become the sole ingesting worker; None if another holds it."""
+        try:
+            import fcntl
+        except ImportError:  # non-POSIX platform: no multi-process deployment
+            return -1
+
+        try:
+            fd = os.open(_INGESTION_LOCK_PATH, os.O_CREAT | os.O_RDWR, 0o600)
+        except OSError as err:
+            logger.warning(
+                "semantic ingestion lock %s unavailable (%s); running without it",
+                _INGESTION_LOCK_PATH,
+                err,
+            )
+            return -1
+
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            os.close(fd)
+            return None
+        return fd
+
+    @staticmethod
+    def _release_ingestion_lock(fd: int) -> None:
+        if fd < 0:
+            return
+        try:
+            import fcntl
+
+            fcntl.flock(fd, fcntl.LOCK_UN)
+        finally:
+            os.close(fd)

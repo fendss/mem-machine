@@ -95,6 +95,40 @@ services:
     networks:
       - memmachine-network
 
+  # Batching proxy in front of the embedding gateway. Coalesces concurrent
+  # single-query embedding calls into upstream batches (the gateway allows
+  # at most 10 inputs per request and rate-limits at ~28 req/s unbatched).
+  embed-proxy:
+    build:
+      context: ./embed-proxy
+    image: memmachine/embed-proxy:local
+    container_name: memmachine-embed-proxy
+    restart: unless-stopped
+    environment:
+      EMBED_UPSTREAM_BASE_URL: ${EMBED_UPSTREAM_BASE_URL:-https://api.gpt.ge/v1}
+      EMBED_UPSTREAM_API_KEY: ${OPENAI_EMBEDDING_API_KEY:-}
+      EMBED_BATCH_MAX_ITEMS: ${EMBED_BATCH_MAX_ITEMS:-8}
+      EMBED_BATCH_MAX_CHARS: ${EMBED_BATCH_MAX_CHARS:-16000}
+      EMBED_BATCH_WAIT_MS: ${EMBED_BATCH_WAIT_MS:-20}
+      EMBED_MAX_INFLIGHT: ${EMBED_MAX_INFLIGHT:-16}
+      EMBED_MAX_ATTEMPTS: ${EMBED_MAX_ATTEMPTS:-5}
+      EMBED_CACHE_SIZE: ${EMBED_CACHE_SIZE:-8192}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "127.0.0.1:${EMBED_PROXY_PORT:-8090}:8080"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - memmachine-network
+
   # MemMachine application
   memmachine:
     image: ${MEMMACHINE_IMAGE:-memmachine/memmachine}
@@ -137,6 +171,8 @@ services:
       - memmachine_logs:/tmp/memory_logs
     depends_on:
       postgres:
+        condition: service_healthy
+      embed-proxy:
         condition: service_healthy
       # required: false so the store this profile did not start is simply
       # skipped rather than failing the project. Exactly one of these runs.

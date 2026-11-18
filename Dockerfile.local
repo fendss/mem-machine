@@ -1,0 +1,36 @@
+FROM python:3.12-slim
+
+ARG PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.v040.all.txt /tmp/requirements.txt
+RUN python -m pip install --no-cache-dir --index-url "${PIP_INDEX_URL}" -r /tmp/requirements.txt \
+    && python -m pip install --no-cache-dir --index-url "${PIP_INDEX_URL}" \
+        "setuptools>=68" wheel "setuptools-scm>=8.0"
+
+ENV SETUPTOOLS_SCM_PRETEND_VERSION=0.4.0
+
+WORKDIR /app
+COPY packages ./packages
+
+RUN python -m pip install --no-cache-dir --no-deps --no-build-isolation \
+        ./packages/common ./packages/server ./packages/client
+
+# NLTK data is fetched through a GitHub raw proxy; direct raw.githubusercontent.com is unreachable here.
+RUN mkdir -p /usr/local/share/nltk_data/tokenizers /usr/local/share/nltk_data/corpora \
+    && curl -fsSL --retry 3 -o /tmp/punkt.zip https://ghproxy.net/https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/tokenizers/punkt.zip \
+    && curl -fsSL --retry 3 -o /tmp/punkt_tab.zip https://ghproxy.net/https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/tokenizers/punkt_tab.zip \
+    && curl -fsSL --retry 3 -o /tmp/stopwords.zip https://ghproxy.net/https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/stopwords.zip \
+    && python -c "import zipfile; [zipfile.ZipFile(a).extractall(t) for a, t in [('/tmp/punkt.zip', '/usr/local/share/nltk_data/tokenizers'), ('/tmp/punkt_tab.zip', '/usr/local/share/nltk_data/tokenizers'), ('/tmp/stopwords.zip', '/usr/local/share/nltk_data/corpora')]]" \
+    && python -c "import nltk; [nltk.data.find(p) for p in ('tokenizers/punkt', 'tokenizers/punkt_tab', 'corpora/stopwords')]; print('NLTK data OK')" \
+    && rm -f /tmp/punkt.zip /tmp/punkt_tab.zip /tmp/stopwords.zip /tmp/requirements.txt
+
+ENV NLTK_DATA=/usr/local/share/nltk_data
+ENV HOST=0.0.0.0
+
+EXPOSE 8080
+
+CMD ["memmachine-server"]

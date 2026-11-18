@@ -1,0 +1,13 @@
+services:
+  docs:
+    profiles: ["docs"]
+  memmachine:
+    environment:
+      OPENAI_EMBEDDING_API_KEY: ${OPENAI_EMBEDDING_API_KEY}
+  postgres:
+    ports: !override
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+  qdrant:
+    ports: !override
+      - "127.0.0.1:${QDRANT_PORT:-6333}:6333"
+      - "127.0.0.1:${QDRANT_GRPC_PORT:-6334}:6334"
